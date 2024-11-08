@@ -76,19 +76,32 @@ try:
     meuNavegador.switch_to.frame(iframe2)
     print("Alternado para o segundo iframe")
 
-    paths = WebDriverWait(meuNavegador, 5).until(
-        EC.presence_of_all_elements_located((By.TAG_NAME, "path"))
-    )
+    class_value = "fill ui-role-button-fill sub-selectable"
+    d_value = "M 0 0 L 287.27272727272725 0 L 287.27272727272725 33.63636363636363 L 0 33.63636363636363 Z"
+
+        # Obter todos os elementos 'path'
+    paths = WebDriverWait(meuNavegador, 20).until(
+            EC.presence_of_all_elements_located((By.TAG_NAME, "path"))
+        )
     
 
-    elemento = paths[64]  # Acessando o elemento pelo índice
-    elemento.click()
-
-    tempoPausaComputador.sleep(4)
-    meuNavegador.find_element(By.XPATH, "//*[@id='pvExplorationHost']/div/div/exploration/div/explore-canvas/div/div[2]/div/div[2]/div[2]/visual-container-repeat/visual-container[11]/transform/div/div[3]/div/div/visual-modern/div/div/div[2]/div/div").click()
-    
-    
-
+    # Iterar sobre todos os elementos 'path' e verificar o atributo 'clip-path'
+    for index, path in enumerate(paths):
+        # Obter o valor do 'clip-path'
+        class_path = path.get_attribute('class')
+        d_path = path.get_attribute('d')
+        
+        # Imprimir todos os valores de clip-path para depuração
+        if class_path == class_value and d_value == d_path:
+            print(f"Índice {index}: class_path = {class_path}")
+        
+        # # Comparar o valor do 'clip-path' com o desejado
+        # if class_path == class_value:
+        #     print(f"Elemento encontrado no índice {index}")
+        #     break
+        # else:
+        #     print("Elemento não encontrado!")
+        
 except TimeoutException as e:
     print(f"Erro ao encontrar o iframe ou o elemento path: {e}")
 
