@@ -1,6 +1,9 @@
 # Automação HDI
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
 from dotenv import load_dotenv
+from selenium.common.exceptions import TimeoutException 
 
 # Importamos o Selenium para trabalhar com as paginas da web
 from selenium import webdriver as opcoes_selenium_aula
@@ -39,10 +42,61 @@ tempoPausaComputador.sleep(4)
 meuNavegador.find_element(By.NAME, "callback_2").click()
 
 # Clicar em EU, ACESSORIA!
+tempoPausaComputador.sleep(4)
 meuNavegador.find_element(By.ID, "layout_7").click()
 
 # Clicar em Relatórios Assessorias
-meuNavegador.find_element(By.XPATH, "//*[@id=""item_5""]/div[4]/ul/li[2]/a").click()
+tempoPausaComputador.sleep(4)
+meuNavegador.find_element(By.XPATH, "//*[@id='item_5']/div[4]/ul/li[2]/a").click()   
+
+# Espera até o elemento estar presente e visível
+# Esperar a página carregar completamente
+WebDriverWait(meuNavegador, 15).until(
+    EC.presence_of_element_located((By.TAG_NAME, "body"))
+)
+
+# Rolando para baixo na página
+# Rolando para baixo em etapas
+meuNavegador.execute_script("window.scrollBy(0, 300);")  # Rola 300 pixels para baixo
+
+tempoPausaComputador.sleep(15)
+
+try:
+    # Esperar e alternar para o primeiro iframe
+    iframe1 = WebDriverWait(meuNavegador, 20).until(
+        EC.presence_of_element_located((By.XPATH, "//*[@id='iframe_funcionalidade']"))
+    )
+    meuNavegador.switch_to.frame(iframe1)
+    print("Alternado para o primeiro iframe")
+
+    # Agora, no primeiro iframe, esperar o segundo iframe
+    iframe2 = WebDriverWait(meuNavegador, 20).until(
+        EC.presence_of_element_located((By.XPATH, "//*[@id='report-container']/iframe"))
+    )
+    meuNavegador.switch_to.frame(iframe2)
+    print("Alternado para o segundo iframe")
+
+    paths = WebDriverWait(meuNavegador, 5).until(
+        EC.presence_of_all_elements_located((By.TAG_NAME, "path"))
+    )
+    
+
+    elemento = paths[64]  # Acessando o elemento pelo índice
+    elemento.click()
+
+    tempoPausaComputador.sleep(4)
+    meuNavegador.find_element(By.XPATH, "//*[@id='pvExplorationHost']/div/div/exploration/div/explore-canvas/div/div[2]/div/div[2]/div[2]/visual-container-repeat/visual-container[11]/transform/div/div[3]/div/div/visual-modern/div/div/div[2]/div/div").click()
+    
+    
+
+except TimeoutException as e:
+    print(f"Erro ao encontrar o iframe ou o elemento path: {e}")
+
+# Voltar ao conteúdo principal após a interação
+meuNavegador.switch_to.default_content()
+
+
+
 
 # Antes de qualquer coisa preciso verificar a data, se a data for diferente da data atual -1 dia, o programa deve ser fechado.
 # O programa só deve rodar se a data corresponder ao dia de ontem.
